@@ -36,5 +36,13 @@ func routes(_ app: Application) throws {
             return track.update(on: req.db).map { track }
         }
     }
+    app.delete("track","delete",":trackID"){req -> EventLoopFuture<HTTPStatus> in
+        Tracks.find(req.parameters.get("trackID") , on: req.db )
+            .unwrap(or: Abort(.notFound))
+            .flatMap{track in
+                track.delete(on : req.db)
+                    .transform(to: .noContent)
+            }
+    }
 }
 
